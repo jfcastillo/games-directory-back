@@ -3,13 +3,13 @@ package com.games.directory.controller;
 import com.games.directory.controller.dto.GameDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 @RestController
+@CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE})
 public class GameController {
     ArrayList<GameDto> games;
     public GameController(){
@@ -23,6 +23,26 @@ public class GameController {
 
     @GetMapping("/games")
     public ResponseEntity<Collection<GameDto>> listGames(){
+        return ResponseEntity.status(HttpStatus.OK).body(games);
+    }
+
+    @GetMapping("/games/{name}")
+    public ResponseEntity<?> getGame(@PathVariable("name") String name){
+        return ResponseEntity.status(HttpStatus.OK).body(games.get(Integer.parseInt(name)));
+    }
+
+    @DeleteMapping("/games/{name}")
+    public ResponseEntity<?> deleteGame(@PathVariable("name") String name){
+        return ResponseEntity.status(HttpStatus.OK).body(games.remove(Integer.parseInt(name)));
+    }
+
+    @PutMapping("/games/{name}")
+    public ResponseEntity<Collection<GameDto>> updateGame(){
+        return ResponseEntity.status(HttpStatus.OK).body(games);
+    }
+
+    @PostMapping("/games")
+    public ResponseEntity<Collection<GameDto>> createGame(){
         return ResponseEntity.status(HttpStatus.OK).body(games);
     }
 }
