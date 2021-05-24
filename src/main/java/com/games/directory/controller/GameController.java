@@ -3,62 +3,92 @@ package com.games.directory.controller;
 import com.games.directory.controller.dto.CreateGameBodyDto;
 import com.games.directory.controller.dto.GameDto;
 import com.games.directory.controller.dto.UpdateGameBodyDto;
+import com.games.directory.domain.Game;
+import com.games.directory.service.interfaces.GameService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @CrossOrigin(origins = "*", methods= {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE})
 public class GameController {
-    private HashMap<Long,GameDto> games;
-    private long id;
-    public GameController(){
-        games = new HashMap<>();
-        id = 5;
-        games.put((long)0,new GameDto(0,"Halo","Xbox","Action","https://www.enter.co/wp-content/uploads/2019/06/Halo-1024x768.jpg"));
-        games.put((long)1,new GameDto(1,"God of war","PlayStation","Action","https://elcanciller.com/wp-content/uploads/2019/09/1524590603-gow-og-image.jpg"));
-        games.put((long)2,new GameDto(2,"Assassins Creed","PC","Action","https://images3.alphacoders.com/823/thumb-1920-82365.jpg"));
-        games.put((long)3,new GameDto(3,"Albion online es un mmorpg no lineal","PC","Aventure","https://imagekit.androidphoria.com/wp-content/uploads/Descargar-el-APK-de-Albion-Online-Android.jpg"));
-        games.put((long)4,new GameDto(4,"Call of Duty Mobile","Mobile","Action","https://cdn1.dotesports.com/wp-content/uploads/sites/4/2021/02/10151019/GarenaWorld.png"));
-    }
+
+    @Autowired
+    private GameService gameService;
 
     @GetMapping("/games")
     public ResponseEntity<Collection<GameDto>> listGames(){
-        return ResponseEntity.status(HttpStatus.OK).body(games.values());
+        List<Game> games = gameService.getAll();
+        List<GameDto> gamesDto = games.stream().map(game -> map(game)).collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.OK).body(gamesDto);
     }
 
     @GetMapping("/games/{id}")
     public ResponseEntity<?> getGame(@PathVariable("id") long id){
-        return ResponseEntity.status(HttpStatus.OK).body(games.get(id));
+        Game game = gameService.get(id);
+        return ResponseEntity.status(HttpStatus.OK).body(map(game));
     }
 
     @DeleteMapping("/games/{id}")
     public ResponseEntity<?> deleteGame(@PathVariable("id") long id){
-        return ResponseEntity.status(HttpStatus.OK).body(games.remove(id));
+        gameService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body("ok");
     }
 
     @PutMapping("/games")
     public ResponseEntity<GameDto> updateGame(@RequestBody UpdateGameBodyDto gameDto){
-        GameDto game = games.get(gameDto.getId());
-        game.setName(gameDto.getName());
-        game.setConsole(gameDto.getConsole());
-        game.setGenre(gameDto.getGenre());
-        game.setImg(gameDto.getImg());
-
-        return ResponseEntity.status(HttpStatus.OK).body(games.get(game.getId()));
+        Game game = gameService.update(map(gameDto));
+        return ResponseEntity.status(HttpStatus.OK).body(map(game));
     }
 
     @PostMapping("/games")
     public ResponseEntity<GameDto> createGame(@RequestBody CreateGameBodyDto gameDto){
-        GameDto game = new GameDto();
-        game.setId(id);
-        game.setName(gameDto.getName());
-        game.setConsole(gameDto.getConsole());
-        game.setGenre(gameDto.getGenre());
-        game.setImg(gameDto.getImg());
-        id++;
-        return ResponseEntity.status(HttpStatus.OK).body(games.put(game.getId(),game));
+        Game game = gameService.create(map(gameDto));
+        return ResponseEntity.status(HttpStatus.OK).body(map(game));
+    }
+
+    private GameDto map(Game game){
+        return new GameDto(
+                game.getId(),
+                game.getName(),
+                game.getConsole(),
+                game.getGenre(),
+                game.getImg()
+        );
+    }
+
+    private Game map(GameDto gameDto){
+        return new Game(
+                gameDto.getId(),
+                gameDto.getName(),
+                gameDto.getConsole(),
+                gameDto.getGenre(),
+                gameDto.getImg()
+        );
+    }
+
+    private Game map(UpdateGameBodyDto gameDto){
+        return new Game(
+                gameDto.getId(),
+                gameDto.getName(),
+                gameDto.getConsole(),
+                gameDto.getGenre(),
+                gameDto.getImg()
+        );
+    }
+
+    private Game map(CreateGameBodyDto gameDto){
+        return new Game(
+                gameDto.getName(),
+                gameDto.getConsole(),
+                gameDto.getGenre(),
+                gameDto.getImg()
+        );
     }
 }
