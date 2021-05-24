@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GameRepository extends CrudRepository<GameDao, Long> {
+    GameDao findByName(String name);
 }

@@ -1,6 +1,8 @@
 package com.games.directory.service;
 
 import com.games.directory.domain.Game;
+import com.games.directory.exceptions.GameAlreadyExistException;
+import com.games.directory.exceptions.GameInformationIncompleteException;
 import com.games.directory.model.GameDao;
 import com.games.directory.repository.GameRepository;
 import com.games.directory.service.interfaces.GameService;
@@ -34,12 +36,23 @@ public class GameServiceImp implements GameService {
     @Override
     public Game create(Game game) {
         GameDao gameDao = map(game);
+        if(game.getName()==null ||game.getConsole()==null || game.getGenre()==null||game.getImg()==null ){
+            throw new GameInformationIncompleteException();
+        }else if(gameRepository.findByName(game.getName())!=null){
+            throw new GameAlreadyExistException();
+        }
         return map(gameRepository.save(gameDao));
     }
 
     @Override
     public Game update(Game game) {
         GameDao gameDao = map(game);
+        if(game.getId()==0 || game.getName()==null ||game.getConsole()==null || game.getGenre()==null||game.getImg()==null ){
+            throw new GameInformationIncompleteException();
+        }
+        //Verify if the game exist
+        gameRepository.findById(game.getId()).get();
+
         gameDao.setId(game.getId());
 
         return map(gameRepository.save(gameDao));
