@@ -37,6 +37,6 @@ public class GameServiceTest {
     @Test
     void getGameTest(){
         Game game = gameService.get(1);
-        assertEquals(game.getName(),"Halo");
+        assertEquals(game.getName(),"Halos");
     }
 }
