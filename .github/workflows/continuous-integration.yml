@@ -24,3 +24,8 @@ jobs:
         run: ./gradlew test --tests "com.games.directory.component.api.*"
       - name: Run unit tests
         run: ./gradlew test --tests "com.games.directory.unit.*"
+      - name: Run contract tests
+        env:
+          PACT_BROKER_BASE_URL: ${{ secrets.PACT_BROKER_BASE_URL }}
+          PACT_BROKER_TOKEN: ${{ secrets.PACT_BROKER_TOKEN }}
+        run: ./gradlew test --tests "com.games.directory.contract.provider.*"
