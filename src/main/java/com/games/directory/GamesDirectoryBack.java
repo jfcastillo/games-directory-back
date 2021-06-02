@@ -5,12 +5,14 @@ import com.games.directory.repository.GameRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class GamesDirectoryBack {
-	private static ApplicationContext applicationContext;
+	//private static ApplicationContext applicationContext;
 	public static void main(String[] args) {
-		applicationContext = SpringApplication.run(GamesDirectoryBack.class, args);
+		ConfigurableApplicationContext applicationContext = SpringApplication.run(GamesDirectoryBack.class, args);
+		// = SpringApplication.run(GamesDirectoryBack.class, args);
 		GameRepository gameRepository = (GameRepository) applicationContext.getBean(GameRepository.class);
 		gameRepository.save(new GameDao("Halo","Xbox","Action","https://www.enter.co/wp-content/uploads/2019/06/Halo-1024x768.jpg"));
 		gameRepository.save(new GameDao("God of war","PlayStation","Action","https://elcanciller.com/wp-content/uploads/2019/09/1524590603-gow-og-image.jpg"));
